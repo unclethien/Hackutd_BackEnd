@@ -20,7 +20,7 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/analyze')
+@app.route('/analyze', methods=['POST'])
 def analyze():
     pre_emotions = []
 
