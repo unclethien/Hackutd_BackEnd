@@ -17,7 +17,7 @@ face_haar_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_f
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return "hello world" 
 
 
 @app.route('/analyze', methods=['POST'])
