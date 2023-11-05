@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, jsonify, render_template, redirect, url_for, flash
 import os
 import cv2
 import numpy as np
@@ -9,11 +9,12 @@ from keras.preprocessing.image import load_img, img_to_array
 from keras.models import load_model
 import matplotlib.pyplot as plt
 import numpy as np
+from flask_cors import CORS
 
 app = Flask(__name__)
 model = load_model("best_model.h5")
 face_haar_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
+CORS(app, origins='http://localhost:3000') 
 
 @app.route('/')
 def index():
@@ -70,7 +71,7 @@ def analyze():
     cap.release()
     cv2.destroyAllWindows()
 
-    return f"Final Prediction: {final_prediction}"
+    # return f"Final Prediction: {final_prediction}"
 
     return jsonify({
         'status': 'success',
