@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, Response
+from flask_socketio import SocketIO, emit
 import os
 import cv2
 import numpy as np
@@ -11,20 +12,40 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 app = Flask(__name__)
+socketio = SocketIO(app)
+
 model = load_model("best_model.h5")
 face_haar_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
+cap = cv2.VideoCapture(0)
+
+
+def video_stream():
+    while True:
+        ret, frame = cap.read()
+        if ret: 
+            _, buffer = cv2.imencode('.jpg', frame)
+            emit('video', buffer.tobytes())
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
+@app.route('/connect')
+def handleConnect():
+    emit('video_settings', {'width': cap.get(3), 'height': cap.get(4)})
+    socketio.start_background_task(video_stream)
+
+
+
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    pre_emotions = []
 
-    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        return Response('Camera not available', status=500)
+
+    pre_emotions = []
 
     while len(pre_emotions) < 20:
         ret, test_img = cap.read()
@@ -79,4 +100,7 @@ def analyze():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.start_background_task(video_stream)
+    socketio.run(app, debug=True)
+
+    

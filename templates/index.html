@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Stream</title>
+</head>
+<body>
+    <img id="video" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const video = document.getElementById('video');
+
+        socket.on('video_settings', ({ width, height }) => {
+            video.width = width;
+            video.height = height;
+        });
+
+        socket.on('video', (data) => {
+            video.src = `data:image/jpeg;base64,${data}`;
+        });
+    </script>
+    <video id="videoElement" autoplay playsinline></video>
+    
+    
+
+</body>
+</html>
