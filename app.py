@@ -18,7 +18,7 @@ CORS(app, origins='http://localhost:3000')
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return "hello world" 
 
 
 @app.route('/analyze', methods=['POST'])
